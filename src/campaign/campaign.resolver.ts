@@ -6,29 +6,34 @@ import {
   ResolveField,
   Resolver,
 } from "@nestjs/graphql";
-import { PlayersService } from "src/player/player.service";
-import { CampaignsService } from "./campaign.service";
+import { PlayerService } from "src/player/player.service";
+import { CampaignService } from "./campaign.service";
 
 @Resolver("Campaign")
 export class CampaignsResolver {
   constructor(
-    private campaignsService: CampaignsService,
-    private playersService: PlayersService
+    private campaignsService: CampaignService,
+    private playersService: PlayerService
   ) {}
 
   @Query()
   async campaign(@Args("id") id: string) {
-    return this.campaignsService.findOneById(id);
+    return this.campaignsService.campaign({ id: Number(id) });
   }
 
   @Mutation()
-  async upsertCampaign(@Args("id") id: string) {
-    return this.campaignsService.upsertCampaign(id);
+  async upsertCampaign(@Args("campaign") campaign: any) {
+    const id = campaign.id;
+    const existingCampaign = await this.campaignsService.campaign(id);
+    if (existingCampaign) {
+      return this.campaignsService.updateCampaign(campaign);
+    }
+    return this.campaignsService.createCampaign(campaign);
   }
 
   @ResolveField()
   async players(@Parent() campaign) {
     const { id } = campaign;
-    return this.playersService.findAll({ campaignId: id });
+    return this.playersService.players({ where: { campaignId: id } });
   }
 }

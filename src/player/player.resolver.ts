@@ -6,29 +6,37 @@ import {
   ResolveField,
   Resolver,
 } from "@nestjs/graphql";
-import { PlayersService } from "./player.service";
-import { CampaignsService } from "../campaign/campaign.service";
+import { PlayerService } from "./player.service";
+import { CampaignService } from "../campaign/campaign.service";
+import { Prisma } from "@prisma/client";
 
 @Resolver("Player")
 export class PlayersResolver {
   constructor(
-    private campaignsService: CampaignsService,
-    private playersService: PlayersService
+    private campaignsService: CampaignService,
+    private playersService: PlayerService
   ) {}
 
   @Query()
   async player(@Args("id") id: string) {
-    return this.playersService.findOneById(id);
+    return this.playersService.player({ id: Number(id) });
   }
 
   @Mutation()
-  async upsertPlayer(@Args("id") id: string) {
-    return this.playersService.upsertPlayer(id);
+  async upsertPlayer(@Args("player") player: any) {
+    const id = player.id;
+    if (id) {
+      const existingPlayer = await this.playersService.player({ id });
+      if (existingPlayer) {
+        return this.playersService.updatePlayer(player);
+      }
+    }
+    return this.playersService.createPlayer(player);
   }
 
   @ResolveField()
   async campaigns(@Parent() player) {
     const { id } = player;
-    return this.campaignsService.findAll({ players: id });
+    return this.campaignsService.campaigns({ where: { id: Number(id) } });
   }
 }

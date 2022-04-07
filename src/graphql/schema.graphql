@@ -9,13 +9,13 @@ type Campaign {
   meetingDay: Weekday
 }
 
-type CampaignInput {
+input CampaignInput {
   id: ID!
   name: String
   description: String
   startDate: String
   endDate: String
-  players: [Player]
+  players: [PlayerInput]
   meetingTime: String
   meetingDay: Weekday
 }
@@ -30,18 +30,37 @@ enum Weekday {
   Sunday
 }
 
+enum PlayerType {
+  Tank
+  Damage
+  Healer
+  Special
+}
+
+input PlayerInput {
+  id: ID
+  name: String
+  email: String
+  phone: String
+  campaign: CampaignInput
+  type: PlayerType
+}
+
 type Player {
   id: ID!
   name: String!
   email: String!
   phone: String
   campaign: Campaign
+  type: PlayerType!
 }
 
 type Query {
   campaign(id: ID!): Campaign
+  player(id: ID!): Player
 }
 
 type Mutation {
-  upsertCampaign(campaignId: ID!): Campaign
+  upsertCampaign(campaign: CampaignInput!): Campaign
+  upsertPlayer(player: PlayerInput!): Player
 }
