@@ -1,0 +1,47 @@
+type Campaign {
+  id: ID!
+  name: String!
+  description: String
+  startDate: String!
+  endDate: String!
+  players: [Player]
+  meetingTime: String
+  meetingDay: Weekday
+}
+
+type CampaignInput {
+  id: ID!
+  name: String
+  description: String
+  startDate: String
+  endDate: String
+  players: [Player]
+  meetingTime: String
+  meetingDay: Weekday
+}
+
+enum Weekday {
+  Monday
+  Tuesday
+  Wednesday
+  Thursday
+  Friday
+  Saturday
+  Sunday
+}
+
+type Player {
+  id: ID!
+  name: String!
+  email: String!
+  phone: String
+  campaigns: [Campaign]
+}
+
+type Query {
+  campaign(id: ID!): Campaign
+}
+
+type Mutation {
+  upsertCampaign(campaignId: ID!): Campaign
+}
