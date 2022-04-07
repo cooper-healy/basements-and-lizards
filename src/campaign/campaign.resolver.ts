@@ -6,8 +6,8 @@ import {
   ResolveField,
   Resolver,
 } from "@nestjs/graphql";
-import { PlayersService } from "src/players/players.service";
-import { CampaignsService } from "./campaigns.service";
+import { PlayersService } from "src/player/player.service";
+import { CampaignsService } from "./campaign.service";
 
 @Resolver("Campaign")
 export class CampaignsResolver {
